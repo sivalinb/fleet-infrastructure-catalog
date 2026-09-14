@@ -14,16 +14,14 @@ jobs:
       - run: python -m pytest --junitxml=evidence/unit-tests.xml
       - name: Catalog API and Gradio integration
         run: python scripts/ci_integration.py
-      - name: Normalize public evidence
+      - name: Summarize verification results
         if: always()
-        run: python scripts/sanitize_evidence.py
+        run: python scripts/summarize_verification.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: execution-evidence
-          path: |
-            evidence/
-            .runtime/logs/
+          path: evidence/verification-summary.json
   postgres:
     runs-on: ubuntu-latest
     timeout-minutes: 10

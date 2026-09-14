@@ -1,5 +1,5 @@
-# Catalog verification evidence
+# Verification summary
 
-`unit-tests.xml` records the independent Python test suite. `integration.json` records HTTP and Gradio verification of fixture ingestion, owner conflicts, dependency exposure, audit history, restoration, and Backstage export.
+The checked-in summary contains aggregate test results for synthetic workloads and fictional inventory. It excludes raw run identifiers, timestamps, host information, source paths, and resource metadata. Full records are generated locally by the verification scripts and excluded from Git.
 
-All supplied inventory is fictional. Passing checks establish the exercised reconciliation behavior, not live fleet adoption or production scale. CI uploads new artifacts from each verification run.
+CI publishes the aggregate summary as a workflow artifact. See [verification scope](../docs/TESTING.md) for the boundaries of these checks.

@@ -8,4 +8,4 @@ Adapter tests verify serial-based identity, health mapping, and rejection of inc
 
 `scripts/verify_postgres.py` uses an explicitly configured disposable PostgreSQL database and verifies reconciliation and restart persistence. GitHub Actions runs this separately from local SQLite checks.
 
-JUnit and integration records are written under `evidence/`. No telemetry service is needed for these checks. A passing suite covers the supplied fixtures and tested boundaries; it is not a capacity benchmark.
+Full JUnit and integration records are written locally under `evidence/` and excluded from Git. No telemetry service is needed for these checks. A passing suite covers the supplied fixtures and tested boundaries; it is not a capacity benchmark.

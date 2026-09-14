@@ -1,5 +1,12 @@
 {
-  "checks": {
+  "scope": "Fictional inventory; aggregate verification results only",
+  "python_tests": {
+    "tests": 39,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integration_checks": {
     "baseline_entities": true,
     "no_telemetry_routes": true,
     "conflict_from_gradio": true,
@@ -7,7 +14,5 @@
     "backstage_export": true,
     "restore": true,
     "audit": true
-  },
-  "entities": 27,
-  "modeled_gpu_slots": 96
+  }
 }
