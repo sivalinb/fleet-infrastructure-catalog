@@ -14,6 +14,9 @@ jobs:
       - run: python -m pytest --junitxml=evidence/unit-tests.xml
       - name: Catalog API and Gradio integration
         run: python scripts/ci_integration.py
+      - name: Normalize public evidence
+        if: always()
+        run: python scripts/sanitize_evidence.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
