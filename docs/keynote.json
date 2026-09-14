@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Fleet Infrastructure Catalog",
+    "body": "Know what you operate, who owns it, and where the evidence came from.",
+    "label": "Python \u00b7 Gradio \u00b7 SQLAlchemy"
+  },
+  {
+    "title": "Inventory is a reconciliation problem",
+    "body": "Hardware, cluster discovery, and service definitions can disagree. Stable identities, field authority, and source provenance turn conflicting observations into a reviewable view.",
+    "label": "The problem"
+  },
+  {
+    "title": "Preserve the source evidence",
+    "body": "<div class=\"flow\"><div class=\"box\"><strong>Sources</strong><small>Kubernetes, Redfish, and service definitions.</small></div><div class=\"box\"><strong>Observations</strong><small>Stable identities, import digests, presence, and source timestamps.</small></div><div class=\"box\"><strong>Reconciliation</strong><small>Per-field authority, provenance, conflicts, and freshness.</small></div><div class=\"box\"><strong>Discovery</strong><small>Ownership, dependency exposure, audit records, and Backstage export.</small></div></div>",
+    "label": "Architecture"
+  },
+  {
+    "title": "One identity, multiple observations",
+    "body": "Raw source records remain separate from the resolved entity. Imports are transactional and replay-safe. Omitted records retain identity and history; freshness is explicit.",
+    "label": "Data model"
+  },
+  {
+    "title": "Ownership and dependencies stay connected",
+    "body": "The graph connects 2 clusters, 4 racks, 12 nodes, 6 services, and 3 teams. These fixtures represent 96 GPU slots. Dependency exposure identifies related services and owners, not a predicted outage.",
+    "label": "Fictional inventory"
+  },
+  {
+    "title": "Correctness before scale claims",
+    "body": "Tests cover authority, conflicts, missing records, stale sources, import replay, rollback, cycle-safe traversal, source normalization, API access, and Gradio exports. PostgreSQL checks verify reconciliation after restart.",
+    "label": "Verification"
+  },
+  {
+    "title": "Scaling follows measured bottlenecks",
+    "body": "Incremental projections, paginated queries, bounded graph traversal, source checkpoints, and durable ingestion jobs address growth. Preserve snapshot completeness and provenance across every change.",
+    "label": "Design considerations"
+  },
+  {
+    "title": "A standalone catalog foundation",
+    "body": "The project owns inventory, reconciliation, audit records, and Backstage export. Telemetry experiments live in a separate repository. No telemetry process is required to run the catalog.",
+    "label": "Scope"
+  }
+]

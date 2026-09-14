@@ -1,0 +1,131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fleet Infrastructure Catalog — Technical Guide</title><style>
+*{box-sizing:border-box}body{margin:0;color:#17354f;background:#f7f9fb;font:18px/1.6 Arial,sans-serif}
+a{color:#007b80}h1,h2,h3{line-height:1.12;letter-spacing:-.04em}h1{font-size:46px}h2{font-size:36px}
+main.guide{max-width:1100px;margin:auto;padding:52px 40px}article{padding:32px 0;border-bottom:1px solid #d8e4eb}
+table{border-collapse:collapse;width:100%;font-size:16px}td,th{padding:12px;text-align:left;border-bottom:1px solid #d7e3eb}
+svg{max-width:100%;height:auto}pre{white-space:pre-wrap;background:#edf2f6;padding:18px;border-radius:10px;font-size:14px}code{font-size:.85em}
+.slide{display:none;min-height:100vh;padding:8vh 7vw 84px;position:relative;background:#f7f9fb}
+.slide:target{display:flex;flex-direction:column}body:not(:has(.slide:target)) .slide:first-child{display:flex;flex-direction:column}
+.slide h1{font-size:clamp(34px,4.5vw,64px);max-width:1060px;margin:14px 0 30px}
+.slide .body{font-size:clamp(19px,2vw,28px);max-width:1080px}.slide .label{font-size:12px;font-weight:bold;letter-spacing:.16em;text-transform:uppercase;color:#00828a}
+.slide:first-child,.slide:last-child{background:#102d4a;color:white}.slide:first-child .label,.slide:last-child .label{color:#80dcd7}
+.slide:first-child a,.slide:last-child a{color:#a5eae4}.slide:first-child h1{margin-top:8vh;font-size:clamp(44px,6vw,86px)}
+.slide footer{position:absolute;bottom:25px;left:7vw;right:7vw;display:flex;gap:24px;align-items:center;font-size:14px}.slide footer .author{margin-right:auto}
+.flow{display:flex;align-items:stretch;gap:14px;margin:24px 0;flex-wrap:wrap}.box{border:1px solid #cddfe7;background:white;padding:22px;border-radius:12px;flex:1;min-width:190px;font-size:20px}.box strong{display:block;margin-bottom:12px;color:#007b80}.box small{font-size:16px;line-height:1.45;display:block}
+@media(max-width:700px){.slide{padding:35px 25px 90px}.slide footer{left:25px;right:25px;gap:12px;font-size:12px}.slide h1{font-size:36px}.slide .body{font-size:21px}.slide footer .author{max-width:125px}.box{min-width:140px}main.guide{padding:25px}}
+@media print{@page{size:landscape;margin:0}.slide,.slide:target,body:not(:has(.slide:target)) .slide:first-child{display:block;min-height:100vh;break-after:page}.slide footer{display:none}}
+</style></head><body><main class="guide"><h1>Fleet Infrastructure Catalog</h1><article id="overview"><h1>Infrastructure ownership with source evidence</h1>
+<p>An infrastructure object can appear under multiple source identities. A hostname may change while a hardware serial remains stable; two systems may disagree about its owner. A catalog that silently takes the latest value hides information needed for support and incident response.</p>
+<p>This project stores observations separately from the resolved entity. The projection makes common lookups convenient while retaining the source and observation time for each field. Conflicts, missing references, and stale observations remain visible.</p>
+<p>The relationship graph connects clusters, racks, nodes, services, and teams. Dependency exposure identifies related services and owners. It does not predict that every related service will fail.</p></article><article id="architecture"><h1>Architecture</h1>
+<p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 700" role="img" aria-label="A value is useful when you can explain it."><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8096ac"/></marker></defs><rect width="1280" height="700" rx="24" fill="#f1f6fc"/><text x="48" y="48" font-family="Arial, sans-serif" font-size="12" fill="#5b738d" font-weight="700">FLEET ATLAS  /  ENGINEERING FIELD GUIDE</text><text x="48" y="96" font-family="Arial, sans-serif" font-size="34" fill="#102d4a" font-weight="700">A value is useful when you can explain it.</text><text x="48" y="128" font-family="Arial, sans-serif" font-size="17" fill="#5b738d" font-weight="400">Stable identity joins observations. Field policy selects values without hiding disagreements.</text><rect x="48" y="190" width="350" height="140" rx="16" fill="#fff" stroke="#d4e0ee"/><rect x="49" y="208" width="4" height="104" rx="2" fill="#007f86"/><text x="68" y="219" font-family="Arial, sans-serif" font-size="11" fill="#007f86" font-weight="700">SERVICE CATALOG</text><text x="68" y="248" font-family="Arial, sans-serif" font-size="21" fill="#102d4a" font-weight="700">owner = team:inference</text><text x="68" y="275" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">Authoritative ownership, observed at T1</text><rect x="48" y="355" width="350" height="140" rx="16" fill="#fff" stroke="#d4e0ee"/><rect x="49" y="373" width="4" height="104" rx="2" fill="#7055bb"/><text x="68" y="384" font-family="Arial, sans-serif" font-size="11" fill="#7055bb" font-weight="700">KUBERNETES</text><text x="68" y="413" font-family="Arial, sans-serif" font-size="21" fill="#102d4a" font-weight="700">owner = team:platform</text><text x="68" y="440" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">Conflicting ownership, observed at T2</text><rect x="48" y="520" width="350" height="110" rx="16" fill="#fff" stroke="#d4e0ee"/><rect x="49" y="538" width="4" height="74" rx="2" fill="#2466be"/><text x="68" y="549" font-family="Arial, sans-serif" font-size="11" fill="#2466be" font-weight="700">REDFISH</text><text x="68" y="578" font-family="Arial, sans-serif" font-size="21" fill="#102d4a" font-weight="700">serial = FTL-A11</text><text x="68" y="605" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">Stable physical identity</text><path d="M398 260 L464 260" fill="none" stroke="#8096ac" stroke-width="2" marker-end="url(#arrow)"/><path d="M398 425 L464 425" fill="none" stroke="#8096ac" stroke-width="2" marker-end="url(#arrow)"/><path d="M398 570 L464 570" fill="none" stroke="#8096ac" stroke-width="2" marker-end="url(#arrow)"/><rect x="464" y="190" width="270" height="440" rx="16" fill="#102d4a" stroke="#102d4a"/><text x="488" y="232" font-family="Arial, sans-serif" font-size="13" fill="#80ddd7" font-weight="700">RECONCILIATION</text><text x="488" y="287" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">1. Validate identity</text><text x="488" y="338" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">2. Check batch replay</text><text x="488" y="389" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">3. Reject older input</text><text x="488" y="440" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">4. Apply field policy</text><text x="488" y="491" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">5. Retain provenance</text><text x="488" y="542" font-family="Arial, sans-serif" font-size="18" fill="#e1edf7" font-weight="400">6. Commit atomically</text><path d="M734 410 L790 410" fill="none" stroke="#8096ac" stroke-width="2" marker-end="url(#arrow)"/><rect x="790" y="190" width="442" height="185" rx="16" fill="#fff" stroke="#d4e0ee"/><rect x="791" y="208" width="4" height="149" rx="2" fill="#007f86"/><text x="810" y="219" font-family="Arial, sans-serif" font-size="11" fill="#007f86" font-weight="700">RESOLVED RECORD</text><text x="810" y="248" font-family="Arial, sans-serif" font-size="21" fill="#102d4a" font-weight="700">One entity, one chosen owner</text><text x="810" y="275" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">owner = team:inference</text><text x="810" y="298" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">provenance = service-catalog @ T1</text><text x="810" y="321" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">conflict = Kubernetes says team:platform</text><rect x="790" y="405" width="442" height="225" rx="16" fill="#fff" stroke="#d4e0ee"/><rect x="791" y="423" width="4" height="189" rx="2" fill="#7055bb"/><text x="810" y="434" font-family="Arial, sans-serif" font-size="11" fill="#7055bb" font-weight="700">HISTORY &amp; DATA QUALITY</text><text x="810" y="463" font-family="Arial, sans-serif" font-size="21" fill="#102d4a" font-weight="700">Absence is a signal</text><text x="810" y="490" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">Partial loss → source_absent</text><text x="810" y="513" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">All sources absent → unobserved</text><text x="810" y="536" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">TTL expired → source_stale</text><text x="810" y="559" font-family="Arial, sans-serif" font-size="15" fill="#5b738d" font-weight="400">References missing → visible finding</text><text x="48" y="674" font-family="Arial, sans-serif" font-size="13" fill="#5b738d" font-weight="400">A newer non-authoritative observation does not silently replace the authoritative owner.</text></svg></p>
+<pre><code class="language-mermaid">flowchart LR
+    A[Kubernetes snapshots] --&gt; N[Python adapters]
+    B[Redfish snapshots] --&gt; N
+    C[Service catalog fixtures] --&gt; I[Transactional ingestion]
+    N --&gt; I
+    I --&gt; O[Source observations]
+    O --&gt; R[Field authority and reconciliation]
+    R --&gt; E[Resolved entities and provenance]
+    R --&gt; U[Audit records]
+    E --&gt; API[FastAPI]
+    U --&gt; API
+    API --&gt; G[Gradio catalog]
+    API --&gt; Y[Backstage YAML]
+</code></pre>
+<h2>Data model</h2>
+<p><code>sources</code> stores authority, heartbeat, and freshness thresholds. <code>observations</code> retains source-specific identities, field values, timestamps, and presence. <code>sync_runs</code> records import IDs and payload digests. <code>entities</code> stores the resolved projection, provenance, and findings. <code>audit</code> retains lifecycle changes.</p>
+<p>Imports validate identities, timestamps, and field types before reconciliation. A replayed batch is idempotent; reuse of an import ID with different content is rejected. Full snapshots mark omitted source observations absent. Incremental imports leave unmentioned observations alone. Entity history remains after source disappearance.</p>
+<h2>Runtime</h2>
+<p>The API uses one worker and serializes projection rebuilds. SQLite is the local default; Compose uses PostgreSQL. Gradio calls the API over HTTP. The catalog has no experiment manager, telemetry service routes, or Collector dependency. Ports 8002 and 7861 are separate from the telemetry project.</p>
+<p>The API optionally requires <code>CATALOG_API_TOKEN</code>. This protects API calls, not individual Gradio users. A shared deployment needs authentication on every exposed surface, TLS, and authorization. Schema creation is included; versioned migrations are not yet implemented.</p></article><article id="technologies"><h1>Technologies</h1>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>Reconciliation, import adapters, API, interface, and verification</td>
+</tr>
+<tr>
+<td>FastAPI and Pydantic</td>
+<td>HTTP endpoints, request validation, typed import contracts</td>
+</tr>
+<tr>
+<td>SQLAlchemy</td>
+<td>Transactions and persisted observations, entities, and audit history</td>
+</tr>
+<tr>
+<td>SQLite / PostgreSQL</td>
+<td>Local storage / container and CI storage</td>
+</tr>
+<tr>
+<td>Gradio and Plotly</td>
+<td>Catalog interface and relationship graph</td>
+</tr>
+<tr>
+<td>HTTPX</td>
+<td>Source snapshot retrieval and API access</td>
+</tr>
+<tr>
+<td>PyYAML</td>
+<td>Backstage-compatible catalog export</td>
+</tr>
+<tr>
+<td>pytest and GitHub Actions</td>
+<td>Regression, HTTP, interface, and database verification</td>
+</tr>
+</tbody>
+</table>
+<p>Kubernetes and Redfish inputs are normalized snapshots. Backstage output is YAML generation; a Backstage server is not bundled. All application code is Python.</p></article><article id="testing"><h1>Verification</h1>
+<p>Unit and API tests cover identity reconciliation, per-field authority, conflicting owners, missing owners, dangling references, source freshness, entity retention, cycle-safe dependency traversal, import replay, stale snapshots, invalid timestamps, rollback, API tokens, and request size limits.</p>
+<p>Adapter tests verify serial-based identity, health mapping, and rejection of incomplete source records. Interface tests use the real API behind Gradio functions. A separation regression checks that only catalog tables and routes exist.</p>
+<p><code>python scripts/ci_integration.py</code> starts an independent catalog API and Gradio application, applies an ownership conflict through the Gradio API, checks dependency exposure, exports Backstage YAML, restores fixtures, and validates audit persistence. It stops its owned processes on exit.</p>
+<p><code>scripts/verify_postgres.py</code> uses an explicitly configured disposable PostgreSQL database and verifies reconciliation and restart persistence. GitHub Actions runs this separately from local SQLite checks.</p>
+<p>JUnit and integration records are written under <code>evidence/</code>. No telemetry service is needed for these checks. A passing suite covers the supplied fixtures and tested boundaries; it is not a capacity benchmark.</p></article><article id="scaling"><h1>Scaling</h1>
+<p>The current implementation rebuilds the full entity projection after an import and serves the relationship graph as one response. That keeps the reconciliation rules inspectable, but costs grow with observations and edges. No fleet-size throughput claim is made.</p>
+<p>At larger scale, move ingestion to durable jobs, serialize or partition reconciliation by canonical identity, and update only affected projections. Add database migrations, index measured query paths, paginate entity and audit APIs, and bound dependency traversal. Preserve source timestamps, import digests, tombstones, and provenance through these changes.</p>
+<p>Independent source workers need checkpoints, retry budgets, full-snapshot completeness checks, and explicit backpressure. A partial page must never be treated as a complete source snapshot. A periodic freshness job should update the view even when no new import arrives.</p>
+<p>Benchmark with fixed entity and observation counts, realistic update skew, dependency fan-out, conflicting fields, concurrent readers, and process restarts. Record import throughput, p95 query latency, database growth, reconciliation lag, and recovery behavior. Add tenancy and per-source authorization before sharing an instance across teams.</p></article><article id="extensions"><h1>Extension opportunities</h1>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Acceptance evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Continuous read-only source connectors</td>
+<td>Reconnect, pagination, deduplication, and incomplete-snapshot tests</td>
+</tr>
+<tr>
+<td>Incremental projection updates</td>
+<td>Same resolved output as full reconciliation across randomized updates</td>
+</tr>
+<tr>
+<td>Versioned schema migrations</td>
+<td>Upgrade and restore against populated databases</td>
+</tr>
+<tr>
+<td>Service ownership history</td>
+<td>Historical owner and source attribution remain queryable</td>
+</tr>
+<tr>
+<td>External operational context</td>
+<td>Explicit API integration with incident or telemetry systems; unavailable sources remain visible</td>
+</tr>
+<tr>
+<td>Shared access</td>
+<td>Identity-aware authorization, tenant isolation, and authenticated interface access</td>
+</tr>
+</tbody>
+</table>
+<p>These are design directions, not implemented capabilities or delivery commitments.</p></article><article id="runbooks"><h1>Operational reference</h1>
+<p>Source age is evaluated against its configured TTL. A stale source makes current state uncertain; it does not establish a hardware failure. A missing source record retains identity and history. Owner conflicts preserve the resolved authority and the conflicting observation.</p>
+<p>For import errors, inspect the HTTP response, batch identifier, canonical identity, and observation timestamp. An older snapshot cannot roll back newer source state. Reused batch IDs must retain exactly the same payload. Fixture restoration replaces fictional source values and should not be used to maintain manually imported inventory.</p>
+<p>The process launcher records owned PIDs in <code>.runtime/processes.json</code> and logs under <code>.runtime/logs</code>. SQLite state is <code>.runtime/catalog.db</code>; container PostgreSQL uses the catalog volume. Back up persisted data before changing schemas or storage configuration.</p></article></main></body></html>

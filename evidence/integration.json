@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "baseline_entities": true,
+    "no_telemetry_routes": true,
+    "conflict_from_gradio": true,
+    "four_exposed_services": true,
+    "backstage_export": true,
+    "restore": true,
+    "audit": true
+  },
+  "entities": 27,
+  "modeled_gpu_slots": 96
+}
